@@ -1,0 +1,10 @@
+pandas
+numpy
+# tensorflow
+tensorflow==1.15
+gym==0.18.0
+scipy
+networkx
+matplotlib
+tqdm
+stable_baselines==2.10.1
