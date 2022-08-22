@@ -41,6 +41,12 @@ pip install -r requirements.txt
 The requirement file is inside the folder.
 This will install all the python libraries for the project, gym, tensorflow, scipy ant others.
 
+set this environmentvariable
+
+```
+export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+```
+
 ### Step 6
 
 Execute the different agents

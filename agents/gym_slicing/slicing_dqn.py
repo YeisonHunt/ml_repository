@@ -11,35 +11,7 @@ def some_weights():
     ws = np.random.randint(30, 65, size = 16)
     return ws
 
-# def step(s, a, possible_actions, new_net, steps, _s):
-#     data = {}
-#     impossibles = 0
-#     for j in range(0,len(possible_actions)):
-#         if(a == possible_actions[j]):
-#             impossibles = 1
-#     if(impossibles == 0):
-#         reward = -55
-#         s_ = s
-#         done = False
-#     else:
-#         if(activator[s][0] == activator[s][1]):
-#             reward = 100
-#             s_ = s
-#             done = True
 
-#         else: 
-#             done = False
-#             suma = a + 1
-#             for k in range(0,len(activator)):
-#                 if (suma == activator[k][0] and activator[s][1] == activator[k][1]):
-#                     s_ = k
-#                     break
-#             if (s_ == s):
-#                 reward = -35
-#             else:
-#                 reward = -2 * steps
-#     _s = s
-#     return _s, s_, reward, done, data
 def convert(state_): #convertir el estado de indice a formato de lista
     # state = []
     # for j in state_:

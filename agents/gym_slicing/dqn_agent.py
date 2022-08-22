@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.keras import optimizers
 import collections as cns #***
 
 def dense(x, weights, bias, activation=tf.identity, **activation_kwargs):
@@ -28,7 +29,7 @@ class Network(object):
                  hidden_size=[50,50],#[50, 50],
                  weights_initializer=tf.initializers.glorot_uniform(),
                  bias_initializer=tf.initializers.zeros(),
-                 optimizer=tf.optimizers.Adam,
+                 optimizer=optimizers.Adam,
                  **optimizer_kwargs):
         """Initialize weights and hyperparameters."""
         self.input_size = input_size
@@ -106,6 +107,34 @@ class Memory(object):
         """Interface to access buffer length."""
         return len(self.buffer)
 
+def epsilon_greedy(Q, epsilon, n_actions, s, train=False):
+    """
+    @param Q Q values state x action -> value
+    @param epsilon for exploration
+    @param s number of states
+    @param train if true then no random actions selected
+    """
+    if train or np.random.rand() < epsilon: 
+        action = np.argmax(Q[s, :])
+    else:
+        action = np.random.randint(0, n_actions)
+    return action
+
+def init_q(s, a, type="zeros"):
+    """
+    @param s the number of states
+    @param a the number of actions
+    @param type random, ones or zeros for the initialization
+    """
+    if type == "ones":
+        return np.ones((s, a))
+    elif type == "random":
+        return np.random.random((s, a)) 
+        #return np.random((s, a))
+    elif type == "zeros":
+        return np.zeros((s, a))
+    elif type == "inf":
+        return np.inf*np.ones((s, a))
 
 class Agent(object):
     """Deep Q-learning agent."""
@@ -145,8 +174,19 @@ class Agent(object):
         self.replay_start_size = replay_start_size
         self.experience_replay = Memory(replay_memory_size) #esto no sirve?
 
+        self.Q = init_q(state_space_size, action_space_size, type="random")
+
     def handle_episode_start(self):
         self.last_state, self.last_action = None, None
+
+    def take_action(self, state, first_state):
+        print("Action taken ...")
+        if first_state:
+            action = epsilon_greedy(self.Q,0.99,self.action_space_size,state,False)
+        else:
+            s_=state
+            action = np.argmax(self.Q[s_, :])
+        return action
 
     def step(self, state, reward, training=True): #***
         """Observe state and rewards, select action.

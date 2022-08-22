@@ -6,39 +6,17 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import itertools
 
+# 1. Generate a random array of 16 integers between 30 and 65. 
+# 2. Return the array.
 def some_weights():
     ws = np.random.randint(30, 65, size = 16)
     return ws
 
-# def step(s, a, possible_actions, new_net, steps, _s):
-#     data = {}
-#     impossibles = 0
-#     for j in range(0,len(possible_actions)):
-#         if(a == possible_actions[j]):
-#             impossibles = 1
-#     if(impossibles == 0):
-#         reward = -55
-#         s_ = s
-#         done = False
-#     else:
-#         if(activator[s][0] == activator[s][1]):
-#             reward = 100
-#             s_ = s
-#             done = True
-
-#         else: 
-#             done = False
-#             suma = a + 1
-#             for k in range(0,len(activator)):
-#                 if (suma == activator[k][0] and activator[s][1] == activator[k][1]):
-#                     s_ = k
-#                     break
-#             if (s_ == s):
-#                 reward = -35
-#             else:
-#                 reward = -2 * steps
-#     _s = s
-#     return _s, s_, reward, done, data
+# 1. First, it checks if the action is valid. If it is not, it returns a reward of -100 and the current state.
+# 2. If the action is valid, it checks if the agent has reached the goal. If it has, it returns a reward of 100 and the current state.
+# 3. If the agent hasn’t reached the goal, it checks if the agent has reached a pit. If it has, it returns a reward of -100 and the current state.
+# 4. If the agent hasn’t reached the goal or a pit, it returns a reward of -10 times the number of steps taken so far.
+# 5. The last step is to update the current state to the new state.
 
 def step(s, a, possible_actions, new_net, steps, _s):
     data = {}
@@ -51,22 +29,11 @@ def step(s, a, possible_actions, new_net, steps, _s):
         reward = -100
         s_ = s
         done = False
-
-    # if(a == activator[s][1]):
-    #     reward = -100
-    #     s_ = s
-    #     done = False
-    # if(activator[s][2] == 'L' and a == 2):
-    # if((activator[s][2] == 'L' and a == 2) or (activator[s][2] == 'H' and a == 3)):
     else:
         if(activator[s][2] == 'L' and activator[s][0] == 2):
             reward = 100
             s_ = s
             done = True
-        # elif(activator[s][2] == 'H' and a == 2):
-        #     reward = -55
-        #     s_ = s
-        #     done = False
         elif(activator[s][2] == 'H' and activator[s][0] == 4):
             reward = 100
             s_ = s
@@ -84,27 +51,23 @@ def step(s, a, possible_actions, new_net, steps, _s):
             else:
                 reward = -10 * steps
 
-    
-    # elif(activator[s][2] == 'H' and a == 4):
-    # # elif(activator[s][2] == 'H' and a == 3):
-    #     reward = 100
-    #     s_ = s
-    #     # s_ = activator[4]
-    #     done = True
-    # else: 
-    #     reward = -100
-    #     s_ = s
-    #     done = False
+
     _s = s
     return _s, s_, reward, done, data
     
 
 
+# It creates a random number between 0 and 4.
 def reset():
     initial_state = [j for j in range(0,5)]
     random_choice = np.random.choice(initial_state, size=1)
     return random_choice[0]
 
+# 1. The function action_x_inception takes in 5 parameters: next_a, next_b, next_c, next_d, and inception.
+# 2. If inception is 1, then the function returns next_a.
+# 3. If inception is 2, then the function returns next_b.
+# 4. If inception is 3, then the function returns next_c.
+# 5. If inception is anything else, then the function returns next_d.
 def action_x_inception(next_a, next_b, next_c, next_d, inception):
     if (inception == 1):
         return next_a
@@ -116,6 +79,10 @@ def action_x_inception(next_a, next_b, next_c, next_d, inception):
         return next_d
 
 if __name__ =="__main__":
+    # 1. First, we create a new network with the following nodes: 1, 2, 3, and 4.
+    # 2. Next, we define the actions that can be taken at each node.
+    # 3. Then, we define the weights of each edge.
+    # 4. Finally, we define the position of each node.
     new_net = nx.DiGraph()
     list_nodes = [i for i in range(1,5)]
     actions = list_nodes
@@ -138,22 +105,17 @@ if __name__ =="__main__":
     new_net.nodes[2]['pos'] = (1, 1)
     new_net.nodes[3]['pos'] = (3, 1)
     new_net.nodes[4]['pos'] = (2, 1)
-    # new_net.nodes[5]['pos'] = (1, 0)
-    # new_net.nodes[6]['pos'] = (3, 0)
-    # new_net.nodes[7]['pos'] = (4, 0)
 
     node_posterior = nx.get_node_attributes(new_net, 'pos')
     nx.draw_networkx(new_net, node_posterior, node_size=450)
-    # arc_weight = nx.get_edge_attributes(new_net, 'height')
+
     labels = nx.get_edge_attributes(new_net, 'weight')
-    # nx.draw_networkx_edge_labels(new_net, node_posterior, edge_labels=arc_weight)
+
     nx.draw_networkx_edge_labels(new_net, node_posterior, edge_labels=labels)
     
     # NETWORK GRAPH
     plt.show()
-    
-    # container = [actions, [6,7]]
-    # container = [actions, [1,1]]
+
     container = [actions, [1], ['H', 'L']]
     activator = list(itertools.product(*container))
     print(activator)
@@ -171,13 +133,18 @@ if __name__ =="__main__":
     max_steps = 2500
     n_tests = 2
 
-    #n_states, n_actions = env.observation_space.n, env.action_space.n
     n_states, n_actions = 6, 3
-    # n_states, n_actions = 42, 7
     agente = ql.QL_agent(alpha, gamma, epsilon, n_states,n_actions) #(alpha, gamma, epsilon, episodes, n_states, n_actions)
     
     episode_rewards = [[] for _ in range(episodes)]
     
+    # 1. The for loop is responsible for repeating the same action for a given number of episodes.
+    # 2. The print statement is just for visualization.
+    # 3. The agente.take_action() method is responsible for selecting an action using the epsilon-greedy policy.
+    # 4. The step() method is responsible for taking a step in the environment and returning the next state, the reward, and other information.
+    # 5. The agente.updateQ() method is responsible for updating the Q-table.
+    # 6. The end_ep variable keeps track of the total time taken by the agent to complete the episode.
+    # 7. The episode_rewards list is used to keep track of the rewards obtained by the agent in each episode.
     for episode in range(episodes):
         print("Episode: {0}".format(episode))
         #s = env.reset()
@@ -206,6 +173,15 @@ if __name__ =="__main__":
                 end_ep = time.time()
                 episode_rewards[episode].append(episode_reward)
                 break
+
+
+    # 1. First, it creates a new environment and a new agent.
+    # 2. It then runs the environment loop, which continues until the agent reaches the goal or falls into a hole.
+    # 3. At each iteration, the agent chooses an action, and the environment returns an observation and a reward.
+    # 4. The agent then stores this transition in its memory, and uses the new observation to choose the next action.
+    # 5. After the agent has reached the goal or fallen into a hole, the loop resets the environment, clears its memory, and restarts.
+    # 6. The loop continues until the agent has reached the goal 10 times.
+    # 7. After the agent has reached the goal 10 times, the python code ends.
     #Test model  
     for test in range(n_tests):
         print("Test #{0}".format(test))
